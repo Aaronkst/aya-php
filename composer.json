@@ -1,11 +1,17 @@
 {
-  "name": "aaronkst/first-composer-package",
-  "description": "A hello world composer private package.",
-  "autoload": {
-      "psr-4": {
-          "aaronkst\\first-composer-package\\": "src/"
-      }
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
+    "name": "aaron/first-composer-package",
+    "autoload": {
+        "psr-4": {
+            "Aaron\\FirstComposerPackage\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Aaron Chen",
+            "email": "dev.kst.aaron@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
 }
