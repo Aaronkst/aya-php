@@ -15,6 +15,16 @@ class MyClass {
   {
     return $this->variable;
   }
+
+  public function getKey(): string
+  {
+    $data = array("grant_type"=>"client_credentials");
+    $base = "https://opensandbox.ayainnovation.com";
+    $path = "/token";
+    $headers = array("Authorization"=>"Basic WUc0WktjN1hXYjVDS0xPZUg4VGVRQjJLVVdRYTp0emtaT1J0X3hRb2FFOWNhVnhMbHRUOWt4SDhh");
+    $relt = api($data, $base, $path, $headers);
+    return $relt;
+  }
 }
 
 function api($payload, $base, $path, $headers) {
@@ -25,7 +35,8 @@ function api($payload, $base, $path, $headers) {
   curl_setopt($ch, CURLOPT_POST, TRUE);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-  curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(array($payload)));
+  curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payload));
+  curl_setopt($ch, CURLOPT_VERBOSE, TRUE);
 
   $response = curl_exec($ch);
 
