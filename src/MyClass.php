@@ -21,7 +21,10 @@ class MyClass {
     $data = array("grant_type"=>"client_credentials");
     $base = "https://opensandbox.ayainnovation.com";
     $path = "/token";
-    $headers = array("Authorization"=>"Basic WUc0WktjN1hXYjVDS0xPZUg4VGVRQjJLVVdRYTp0emtaT1J0X3hRb2FFOWNhVnhMbHRUOWt4SDhh");
+    $headers = array(
+      "Authorization"=>"Basic WUc0WktjN1hXYjVDS0xPZUg4VGVRQjJLVVdRYTp0emtaT1J0X3hRb2FFOWNhVnhMbHRUOWt4SDhh",
+      "Content-Type"=>"application/x-www-form-urlencoded"
+    );
     $relt = api($data, $base, $path, $headers);
     return $relt;
   }
