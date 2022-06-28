@@ -1,21 +1,21 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Aaron\FirstComposerPackage;
 
 class MyClass 
 {
-  public readonly string $key;
-  public readonly string $secret;
-  public readonly string $phone;
-  public readonly string $password;
-  private readonly string $prefix;
-  private readonly string $base;
-  private readonly boolean $production;
-  private readonly string $decryptKey;
+  public string $key;
+  public string $secret;
+  public string $phone;
+  public string $password;
+  private string $prefix;
+  private string $base;
+  private bool $production;
+  private string $decryptKey;
   private string $accesstoken;
   private string $usertoken;
 
-  public function _construct(string $key, string $secret, string $phone, string $password, boolean $production = false, string $decryptKey)
+  public function __construct(string $key, string $secret, string $phone, string $password, bool $production = false, string $decryptKey)
   {
     $this->key = $key;
     $this->secret = $secret;
@@ -27,33 +27,35 @@ class MyClass
     $this->decryptKey = $decryptKey;
   }
 
-  public function getKey()
+  public function getKey(): string
   {
-    $data: array = array("grant_type"=>"client_credentials");
-    $base: string = "https://opensandbox.ayainnovation.com";
-    $path: string = "/token";
-    $headers: array = array(
-      "Authorization"=>"Basic WUc0WktjN1hXYjVDS0xPZUg4VGVRQjJLVVdRYTp0emtaT1J0X3hRb2FFOWNhVnhMbHRUOWt4SDhh",
-      "Content-Type"=>"application/x-www-form-urlencoded"
-    );
-    $relt = api($data, $base, $path, $headers);
-    return $relt;
+    try {
+      $base = "https://opensandbox.ayainnovation.com";
+      $path = "/token";
+
+      $data = array("grant_type"=>"client_credentials");
+
+      $headers = array();
+      $headers[] = "Authorization: Basic " . base64_encode("$this->key:$this->secret");
+
+      $relt = api($data, $base, $path, $headers);
+      return $relt->access_token;
+    } catch ( Exception $e ) {
+      print_r($e);
+    }
   }
 }
 
-function api(array $payload, string $base, string $path, array $headers): array 
+function api(array $payload, string $base, string $path, array $headers): object
 {
-  $ch = curl_init();
+  $ch = curl_init($base . $path);
 
   curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-  curl_setopt($ch, CURLOPT_URL, $base . $path);
   curl_setopt($ch, CURLOPT_POST, TRUE);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
   curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payload));
-  curl_setopt($ch, CURLOPT_VERBOSE, TRUE);
-
-  print_r(http_build_query($payload));
+  //curl_setopt($ch, CURLOPT_VERBOSE, true);
 
   $response = curl_exec($ch);
 
@@ -62,6 +64,7 @@ function api(array $payload, string $base, string $path, array $headers): array
   if ($err) {
     throw $err;
   } else {
+    $response = json_decode($response);
     return $response;
   }
 }
