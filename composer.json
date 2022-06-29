@@ -1,14 +1,14 @@
 {
-    "name": "aaron/first-composer-package",
+    "name": "aya/online-merchant",
     "autoload": {
         "psr-4": {
-            "Aaron\\FirstComposerPackage\\": "src/"
+            "Aya\\OnlineMerchant\\": "src/"
         }
     },
     "authors": [
         {
-            "name": "Aaron Chen",
-            "email": "dev.kst.aaron@gmail.com"
+            "name": "Khant Si Thu (Aaron)",
+            "email": "khantsithu@ayainnovation.com"
         }
     ],
     "require-dev": {

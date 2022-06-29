@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Aaron\FirstComposerPackage;
+namespace Aya\OnlineMerchant;
 
 function api(array $payload, string $base, string $path, array $headers): object
 {
@@ -26,7 +26,7 @@ function api(array $payload, string $base, string $path, array $headers): object
   }
 }
 
-class MyClass 
+class AyaOnlineMerchant 
 {
   public string $key;
   public string $secret;
