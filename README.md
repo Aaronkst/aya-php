@@ -2,7 +2,7 @@
 
 ## Installation
 
-`npm install aya-online-merchant --save`
+`composer require Aya\OnlineMerchant`
 
 ## Initialization
 
