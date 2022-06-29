@@ -118,7 +118,7 @@ class MyClass
         "externalTransactionId"=>$externalTransactionId,
         "externalAdditionalData"=>$externalAdditionalData,
         "serviceCode"=>$serviceCode,
-        "timelimit"=>$timelimit
+        "timelimit"=>ctype_digit($timelimit) ? intval($timelimit) : null
       );
 
       $headers = array();
@@ -155,7 +155,7 @@ class MyClass
         "externalTransactionId"=>$externalTransactionId,
         "externalAdditionalData"=>$externalAdditionalData,
         "serviceCode"=>$serviceCode,
-        "timelimit"=>$timelimit
+        "timelimit"=>ctype_digit($timelimit) ? intval($timelimit) : null
       );
 
       $headers = array();
