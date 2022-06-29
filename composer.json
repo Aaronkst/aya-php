@@ -10,8 +10,5 @@
             "name": "Khant Si Thu (Aaron)",
             "email": "khantsithu@ayainnovation.com"
         }
-    ],
-    "require-dev": {
-        "phpunit/phpunit": "^9.5"
-    }
+    ]
 }
