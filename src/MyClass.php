@@ -101,11 +101,10 @@ class MyClass
     string $externalAdditionalData, 
     bool $v2 = false, 
     string $serviceCode = "", 
-    string $timelimit = ""
+    int $timelimit = 0
   ): object
   {
     try {
-      if(!ctype_digit($timelimit)) throw new \Exception("Time Limit includes non numerical characters");
       if($v2 && $serviceCode === "") throw new \Exception("Service Code required for V2 API");
       
       $token = $this->getUserToken();
@@ -120,7 +119,7 @@ class MyClass
         "externalTransactionId"=>$externalTransactionId,
         "externalAdditionalData"=>$externalAdditionalData,
         "serviceCode"=>$serviceCode,
-        "timelimit"=>intval($timelimit)
+        "timelimit"=>$timelimit ? $timelimit : ""
       );
 
       $headers = array();
@@ -141,11 +140,10 @@ class MyClass
     string $externalAdditionalData, 
     bool $v2 = false, 
     string $serviceCode = "", 
-    string $timelimit = ""
+    int $timelimit = 0
   ): object
   {
     try {
-      if(!ctype_digit($timelimit)) throw new \Exception("Time Limit includes non numerical characters");
       if($v2 && $serviceCode === "") throw new \Exception("Service Code required for V2 API");
 
       $token = $this->getUserToken();
@@ -159,7 +157,7 @@ class MyClass
         "externalTransactionId"=>$externalTransactionId,
         "externalAdditionalData"=>$externalAdditionalData,
         "serviceCode"=>$serviceCode,
-        "timelimit"=>intval($timelimit)
+        "timelimit"=>$timelimit ? $timelimit : ""
       );
 
       $headers = array();
