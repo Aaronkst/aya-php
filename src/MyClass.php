@@ -105,10 +105,12 @@ class MyClass
   ): object
   {
     try {
+      if(!ctype_digit($timelimit)) throw new \Exception("Time Limit includes non numerical characters");
+      if($v2 && $serviceCode === "") throw new \Exception("Service Code required for V2 API");
+      
       $token = $this->getUserToken();
       if($token !== TRUE) throw new \Exception("User Token Failure");
-      if($v2 && $serviceCode === "") throw new \Exception("Service Code required for V2 API");
-
+      
       $path = $v2 ? "$this->prefix/thirdparty/merchant/v2/requestPushPayment" : "$this->prefix/thirdparty/merchant/requestPayment";
 
       $data = array(
@@ -118,7 +120,7 @@ class MyClass
         "externalTransactionId"=>$externalTransactionId,
         "externalAdditionalData"=>$externalAdditionalData,
         "serviceCode"=>$serviceCode,
-        "timelimit"=>ctype_digit($timelimit) ? intval($timelimit) : null
+        "timelimit"=>intval($timelimit)
       );
 
       $headers = array();
@@ -143,9 +145,11 @@ class MyClass
   ): object
   {
     try {
+      if(!ctype_digit($timelimit)) throw new \Exception("Time Limit includes non numerical characters");
+      if($v2 && $serviceCode === "") throw new \Exception("Service Code required for V2 API");
+
       $token = $this->getUserToken();
       if($token !== TRUE) throw new \Exception("User Token Failure");
-      if($v2 && $serviceCode === "") throw new \Exception("Service Code required for V2 API");
 
       $path = $v2 ? "$this->prefix/thirdparty/merchant/v2/requestQRPayment" : "$this->prefix/thirdparty/merchant/requestQRPayment";
 
@@ -155,7 +159,7 @@ class MyClass
         "externalTransactionId"=>$externalTransactionId,
         "externalAdditionalData"=>$externalAdditionalData,
         "serviceCode"=>$serviceCode,
-        "timelimit"=>ctype_digit($timelimit) ? intval($timelimit) : null
+        "timelimit"=>intval($timelimit)
       );
 
       $headers = array();
