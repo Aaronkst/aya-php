@@ -2,6 +2,30 @@
 
 namespace Aaron\FirstComposerPackage;
 
+function api(array $payload, string $base, string $path, array $headers): object
+{
+  $ch = curl_init("https://$base$path");
+
+  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+  curl_setopt($ch, CURLOPT_POST, TRUE);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payload));
+  //curl_setopt($ch, CURLOPT_VERBOSE, TRUE);
+
+  $response = curl_exec($ch);
+
+  $err = curl_error($ch);
+  curl_close($ch);
+  if ($err) {
+    throw $err;
+  } else {
+    $response = json_decode($response);
+    if(isset($response->err) && $response->err !== 200) throw new \Exception($response->message);
+    return $response;
+  }
+}
+
 class MyClass 
 {
   public string $key;
@@ -15,7 +39,7 @@ class MyClass
   private string $accesstoken;
   private string $usertoken;
 
-  public function __construct(string $key, string $secret, string $phone, string $password, bool $production = false, string $decryptKey)
+  public function __construct(string $key, string $secret, string $phone, string $password, string $decryptKey, bool $production = false)
   {
     $this->key = $key;
     $this->secret = $secret;
@@ -27,10 +51,9 @@ class MyClass
     $this->decryptKey = $decryptKey;
   }
 
-  public function getKey(): string
+  private function getAccessToken(): bool
   {
     try {
-      $base = "https://opensandbox.ayainnovation.com";
       $path = "/token";
 
       $data = array("grant_type"=>"client_credentials");
@@ -38,33 +61,153 @@ class MyClass
       $headers = array();
       $headers[] = "Authorization: Basic " . base64_encode("$this->key:$this->secret");
 
-      $relt = api($data, $base, $path, $headers);
-      return $relt->access_token;
+      $relt = api($data, $this->base, $path, $headers);
+      $this->accesstoken = $relt->access_token;
+      return TRUE;
     } catch ( Exception $e ) {
       print_r($e);
+      throw $e;
     }
   }
-}
 
-function api(array $payload, string $base, string $path, array $headers): object
-{
-  $ch = curl_init($base . $path);
+  private function getUserToken(): bool
+  {
+    try {
+      $token = $this->getAccessToken();
+      if($token !== TRUE) throw new \Exception("Access Token Failure");
+      $path = "$this->prefix/thirdparty/merchant/login";
 
-  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-  curl_setopt($ch, CURLOPT_POST, TRUE);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
-  curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payload));
-  //curl_setopt($ch, CURLOPT_VERBOSE, true);
+      $data = array(
+        "phone"=>$this->phone,
+        "password"=>$this->password
+      );
 
-  $response = curl_exec($ch);
+      $headers = array();
+      $headers[] = "Token: Bearer $this->accesstoken";
 
-  $err = curl_error($ch);
-  curl_close($ch);
-  if ($err) {
-    throw $err;
-  } else {
-    $response = json_decode($response);
-    return $response;
+      $relt = api($data, $this->base, $path, $headers);
+      $this->usertoken = $relt->token->token;
+      return TRUE;
+    } catch ( Exception $e ) {
+      print_r($e);
+      throw $e;
+    }
+  }
+
+  public function createTransaction(
+    string $customerPhone, 
+    string $amount, 
+    string $externalTransactionId, 
+    string $externalAdditionalData, 
+    bool $v2 = false, 
+    string $serviceCode = "", 
+    string $timelimit = ""
+  ): object
+  {
+    try {
+      $token = $this->getUserToken();
+      if($token !== TRUE) throw new \Exception("User Token Failure");
+      if($v2 && $serviceCode === "") throw new \Exception("Service Code required for V2 API");
+
+      $path = $v2 ? "$this->prefix/thirdparty/merchant/v2/requestPushPayment" : "$this->prefix/thirdparty/merchant/requestPayment";
+
+      $data = array(
+        "customerPhone"=>$customerPhone,
+        "amount"=>$amount,
+        "currency"=>"MMK",
+        "externalTransactionId"=>$externalTransactionId,
+        "externalAdditionalData"=>$externalAdditionalData,
+        "serviceCode"=>$serviceCode,
+        "timelimit"=>$timelimit
+      );
+
+      $headers = array();
+      $headers[] = "Token: Bearer $this->accesstoken";
+      $headers[] = "Authorization: Bearer $this->usertoken";
+
+      $relt = api($data, $this->base, $path, $headers);
+      return $relt;
+    } catch ( Exception $e ) {
+      print_r($e);
+      throw $e;
+    }
+  }
+
+  public function createQR(
+    string $amount, 
+    string $externalTransactionId, 
+    string $externalAdditionalData, 
+    bool $v2 = false, 
+    string $serviceCode = "", 
+    string $timelimit = ""
+  ): object
+  {
+    try {
+      $token = $this->getUserToken();
+      if($token !== TRUE) throw new \Exception("User Token Failure");
+      if($v2 && $serviceCode === "") throw new \Exception("Service Code required for V2 API");
+
+      $path = $v2 ? "$this->prefix/thirdparty/merchant/v2/requestQRPayment" : "$this->prefix/thirdparty/merchant/requestQRPayment";
+
+      $data = array(
+        "amount"=>$amount,
+        "currency"=>"MMK",
+        "externalTransactionId"=>$externalTransactionId,
+        "externalAdditionalData"=>$externalAdditionalData,
+        "serviceCode"=>$serviceCode,
+        "timelimit"=>$timelimit
+      );
+
+      $headers = array();
+      $headers[] = "Token: Bearer $this->accesstoken";
+      $headers[] = "Authorization: Bearer $this->usertoken";
+
+      $relt = api($data, $this->base, $path, $headers);
+      return $relt;
+    } catch ( Exception $e ) {
+      print_r($e);
+      throw $e;
+    }
+  }
+
+  public function refundPayment(
+    string $referenceNumber, 
+    string $externalTransactionId,
+  ): object
+  {
+    try {
+      $token = $this->getUserToken();
+      if($token !== TRUE) throw new \Exception("User Token Failure");
+
+      $path = "$this->prefix/thirdparty/merchant/refundPayment";
+
+      $data = array(
+        "externalTransactionId"=>$externalTransactionId,
+        "referenceNumber"=>$referenceNumber
+      );
+
+      $headers = array();
+      $headers[] = "Token: Bearer $this->accesstoken";
+      $headers[] = "Authorization: Bearer $this->usertoken";
+
+      $relt = api($data, $this->base, $path, $headers);
+      return $relt;
+    } catch ( Exception $e ) {
+      print_r($e);
+      throw $e;
+    }
+  }
+
+  public function decryptPayment (string $data): object
+  {
+    try {
+      $cipher ="AES-256-ECB";
+      $chiperRaw = base64_decode($data);
+      $decyptedData = openssl_decrypt($chiperRaw, $cipher, $this->decryptKey, OPENSSL_RAW_DATA);
+      return json_decode($decyptedData);
+    } catch ( Exception $e ) {
+      print_r($e);
+      throw $e;
+    }
   }
 }
