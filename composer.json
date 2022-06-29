@@ -1,5 +1,5 @@
 {
-    "name": "aya/online-merchant",
+    "name": "aya/aya-php",
     "autoload": {
         "psr-4": {
             "Aya\\OnlineMerchant\\": "src/"
