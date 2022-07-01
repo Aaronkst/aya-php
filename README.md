@@ -2,13 +2,13 @@
 
 ## Installation
 
-`composer require aya/aya-php`
+    composer require aya/aya-php
 
 ## Initialization
 
-`use Aya\OnlineMerchant\AyaOnlineMerchant;`
+    use Aya\OnlineMerchant\AyaOnlineMerchant;
 
-`$AyaClient = new AyaOnlineMerchant( $key, $secret, $phone, $password, $decryptKey, $production );`
+    $AyaClient = new AyaOnlineMerchant( $key, $secret, $phone, $password, $decryptKey, $production );
 
 #### Config Values
 
@@ -31,7 +31,7 @@ This method is used to push a payment request to your customer so they can make 
 
 #### v1
 
-`createTransaction(string $customerPhone, string $amount, string $externalTransactionId, string $externalAdditionalData);`
+    createTransaction(string $customerPhone, string $amount, string $externalTransactionId, string $externalAdditionalData);
 
     $result = $AyaClient->createTransaction(
       "09123456789", //required, customer's phone number
@@ -44,7 +44,7 @@ This method is used to push a payment request to your customer so they can make 
 
 v2 is used when you have dedicated business agreements set up with Aya Pay for special flows.
 
-`createTransaction(string $customerPhone, string $amount, string $externalTransactionId, string $externalAdditionalData, bool $v2, string $serviceCode, int $timelimit);`
+    createTransaction(string $customerPhone, string $amount, string $externalTransactionId, string $externalAdditionalData, bool $v2, string $serviceCode, int $timelimit);
 
     $result = $AyaClient->createTransaction(
       "09123456789", //required, customer's phone number
@@ -62,7 +62,7 @@ v2 is used when you have dedicated business agreements set up with Aya Pay for s
 
 This method is used to request a string to generate a QR which your customer can scan and make payment to you via Aya Pay.
 
-`createQR(string $amount, string $externalTransactionId, string $externalAdditionalData);`
+    createQR(string $amount, string $externalTransactionId, string $externalAdditionalData);
 
     $result = $AyaClient->createQR(
       "1000", //required, payment amount
@@ -74,7 +74,7 @@ This method is used to request a string to generate a QR which your customer can
 
 v2 is used when you have dedicated business agreements set up with Aya Pay for special flows.
 
-`createQR(string $amount, string $externalTransactionId, string $externalAdditionalData, bool $v2, string $serviceCode, int $timelimit);`
+    createQR(string $amount, string $externalTransactionId, string $externalAdditionalData, bool $v2, string $serviceCode, int $timelimit);
 
     $result = $AyaClient->createQR(
       "1000", //required, payment amount
@@ -89,7 +89,7 @@ v2 is used when you have dedicated business agreements set up with Aya Pay for s
 
 This method is used to refund a payment made by customer to their Aya Pay wallet.
 
-`refundPayment(string $externalTransactionId, string $referenceNumber);`
+    refundPayment(string $externalTransactionId, string $referenceNumber);
 
     $result = $AyaClient->refundPayment(
       "externalTransactionId", //required, your unique order number
@@ -100,4 +100,4 @@ This method is used to refund a payment made by customer to their Aya Pay wallet
 
 This method is used to decrypt the data we send to your application server after a successful payment made by the customer to you.
 
-`$data = $AyaClient->decryptPayment("encryptedPaymentData");`
+    $data = $AyaClient->decryptPayment("encryptedPaymentData");
